@@ -5,8 +5,8 @@ FROM node:18-alpine
 RUN apk add --no-cache \
     openssl \
     ca-certificates \
-    libssl1.1 \
-    libcrypto1.1
+    libssl3 \
+    libcrypto3
 
 # Set working directory
 WORKDIR /app
