@@ -32,7 +32,7 @@ async function testDatabaseConnection() {
       });
       
       console.log('\n👥 Sample Users:');
-      users.forEach(user => {
+      users.forEach((user: any) => {
         console.log(`  ID: ${user.id}`);
         console.log(`  Email: ${user.email}`);
         console.log(`  Name: ${user.name || 'N/A'}`);
@@ -56,7 +56,7 @@ async function testDatabaseConnection() {
       });
       
       console.log('\n💳 Sample Wallets:');
-      wallets.forEach(wallet => {
+      wallets.forEach((wallet: any) => {
         console.log(`  ID: ${wallet.id}`);
         console.log(`  User: ${wallet.user.name || 'N/A'} (${wallet.user.email})`);
         console.log(`  Balance: ${wallet.balance} ${wallet.currency}`);
@@ -84,7 +84,7 @@ async function testDatabaseConnection() {
       });
       
       console.log('\n💸 Recent Transactions:');
-      transactions.forEach(tx => {
+      transactions.forEach((tx: any) => {
         console.log(`  ID: ${tx.id}`);
         console.log(`  Reference: ${tx.reference}`);
         console.log(`  User: ${tx.user.name || 'N/A'} (${tx.user.email})`);
