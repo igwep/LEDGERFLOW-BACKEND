@@ -1,0 +1,40 @@
+services:
+  # Type of service
+  type: web
+  
+  # Runtime environment
+  runtime: node
+  
+  # Build command
+  buildCommand: npm run build
+  
+  # Start command
+  startCommand: npm start
+  
+  # Environment variables
+  envVars:
+    - key: NODE_ENV
+      value: production
+    - key: PORT
+      value: 5000
+    - key: DATABASE_URL
+      value: postgresql://user:password@host:5432/ledgerflow
+      sync: false
+    - key: JWT_SECRET
+      value: your-production-jwt-secret
+      sync: false
+    - key: WEBHOOK_SECRET
+      value: your-webhook-secret
+      sync: false
+    - key: ALLOWED_ORIGINS
+      value: https://yourdomain.com,https://www.yourdomain.com
+      sync: false
+
+# Health check path
+healthCheckPath: /api/health
+
+# Auto-deploy configuration
+autoDeploy: true
+
+# Plan type (free, starter, standard, pro)
+plan: free
