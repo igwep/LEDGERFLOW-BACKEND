@@ -7,6 +7,7 @@ import routes from './routes'
 import { requestIdMiddleware, corsMiddleware } from './middleware/common'
 import { errorHandler, notFoundHandler } from './middleware/errorHandler'
 import { AuthenticatedRequest } from './types'
+import { specs, swaggerUi } from './config/swagger'
 
 dotenv.config()
 
@@ -28,8 +29,59 @@ console.log('🔗 About to mount routes...');
 console.log('🔗 Routes imported:', typeof routes);
 app.use('/api', routes)
 
+// Swagger Documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, {
+  explorer: true,
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'LedgerFlow Payment Gateway API Documentation',
+}))
+
+// Swagger JSON endpoint
+app.get('/api-docs.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json')
+  res.send(specs)
+})
+
+/**
+ * @swagger
+ * /api/health:
+ *   get:
+ *     summary: Health check endpoint
+ *     tags: [Health]
+ *     responses:
+ *       200:
+ *         description: Service is healthy
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     name:
+ *                       type: string
+ *                       example: LedgerFlow API
+ *                     version:
+ *                       type: string
+ *                       example: 1.0.0
+ *                     status:
+ *                       type: string
+ *                       example: running
+ *                 meta:
+ *                   type: object
+ *                   properties:
+ *                     timestamp:
+ *                       type: string
+ *                       format: date-time
+ *                     requestId:
+ *                       type: string
+ */
 // Health check
-app.get('/', (req: AuthenticatedRequest, res) => {
+app.get('/api/health', (req: AuthenticatedRequest, res) => {
   res.json({
     success: true,
     data: {
@@ -131,4 +183,5 @@ app.listen(PORT, () => {
   console.log(`🚀 LedgerFlow API server running on port ${PORT}`)
   console.log(`📊 Health check: http://localhost:${PORT}/`)
   console.log(`🔗 API docs: http://localhost:${PORT}/api/health`)
+  console.log(`📚 Swagger Documentation: http://localhost:${PORT}/api-docs`)
 })

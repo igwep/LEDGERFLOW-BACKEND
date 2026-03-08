@@ -5,6 +5,30 @@ const router = Router();
 
 console.log('👤 User routes module loaded!');
 
+/**
+ * @swagger
+ * /api/users/test:
+ *   get:
+ *     summary: Test user routes
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: User routes working successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: User routes are working with database!
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ */
 // Test route to verify user routes are working
 router.get('/test', (req, res) => {
   console.log('🧪 User routes test endpoint hit!');
@@ -15,6 +39,62 @@ router.get('/test', (req, res) => {
   });
 });
 
+/**
+ * @swagger
+ * /api/users:
+ *   post:
+ *     summary: Create a new user with unique payment endpoint
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: merchant@example.com
+ *               name:
+ *                 type: string
+ *                 example: John Merchant
+ *               password:
+ *                 type: string
+ *                 example: password123
+ *               role:
+ *                 type: string
+ *                 enum: [USER, MERCHANT, ADMIN]
+ *                 example: MERCHANT
+ *     responses:
+ *       201:
+ *         description: User created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 // Create user (working database integration)
 router.post('/', async (req, res) => {
   console.log('👤 POST /users route hit:', req.body);
