@@ -44,13 +44,13 @@ app.get('/api-docs.json', (req, res) => {
 
 /**
  * @swagger
- * /api/health:
+ * /:
  *   get:
- *     summary: Health check endpoint
+ *     summary: API root endpoint
  *     tags: [Health]
  *     responses:
  *       200:
- *         description: Service is healthy
+ *         description: API information
  *         content:
  *           application/json:
  *             schema:
@@ -81,7 +81,7 @@ app.get('/api-docs.json', (req, res) => {
  *                       type: string
  */
 // Health check
-app.get('/api/health', (req: AuthenticatedRequest, res) => {
+app.get('/', (req: AuthenticatedRequest, res) => {
   res.json({
     success: true,
     data: {

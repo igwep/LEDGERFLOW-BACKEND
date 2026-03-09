@@ -155,6 +155,72 @@ router.post('/:endpoint', async (req, res) => {
 });
 
 /**
+ * @swagger
+ * /api/payments/status/{reference}:
+ *   get:
+ *     summary: Check payment status by reference
+ *     tags: [Payments]
+ *     parameters:
+ *       - in: path
+ *         name: reference
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Payment reference number
+ *         example: pay_ref_123456
+ *     responses:
+ *       200:
+ *         description: Payment status retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     reference:
+ *                       type: string
+ *                       example: pay_ref_123456
+ *                     status:
+ *                       type: string
+ *                       enum: [pending, completed, failed]
+ *                       example: completed
+ *                     amount:
+ *                       type: number
+ *                       example: 5000
+ *                     currency:
+ *                       type: string
+ *                       example: USD
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
+ *       400:
+ *         description: Bad request - Missing reference
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       404:
+ *         description: Payment not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+/**
  * Check payment status
  * GET /api/payments/status/:reference
  */
@@ -194,6 +260,99 @@ router.get('/status/:reference', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/payments/history/{userId}:
+ *   get:
+ *     summary: Get payment history for a user
+ *     tags: [Payments]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User ID
+ *         example: user_12345
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 20
+ *         description: Maximum number of payments to return
+ *       - in: query
+ *         name: offset
+ *         schema:
+ *           type: integer
+ *           default: 0
+ *         description: Number of payments to skip
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [pending, completed, failed]
+ *         description: Filter by payment status
+ *       - in: query
+ *         name: startDate
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Filter payments from this date
+ *       - in: query
+ *         name: endDate
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Filter payments until this date
+ *     responses:
+ *       200:
+ *         description: Payment history retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     payments:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Transaction'
+ *                     total:
+ *                       type: integer
+ *                       example: 100
+ *                     hasMore:
+ *                       type: boolean
+ *                       example: true
+ *                     pagination:
+ *                       type: object
+ *                       properties:
+ *                         limit:
+ *                           type: integer
+ *                           example: 20
+ *                         offset:
+ *                           type: integer
+ *                           example: 0
+ *                         total:
+ *                           type: integer
+ *                           example: 100
+ *       400:
+ *         description: Bad request - Missing user ID
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 /**
  * Get payment history for a user
  * GET /api/payments/history/:userId
