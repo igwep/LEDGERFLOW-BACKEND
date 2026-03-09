@@ -1,4 +1,6 @@
-import { PrismaClient } from '@prisma/client';
+// Import PrismaClient dynamically
+const { PrismaClient: SetupPrismaClient } = require('@prisma/client');
+const setupPrisma = new SetupPrismaClient();
 
 // Simple database access without requiring .env setup
 async function quickDatabaseAccess() {
@@ -33,10 +35,10 @@ async function quickDatabaseAccess() {
   // If DATABASE_URL is set, try to connect
   console.log('✅ DATABASE_URL found, attempting connection...\n');
   
-  const prisma = new PrismaClient();
+  const setupPrisma = new SetupPrismaClient();
   
   try {
-    await prisma.$connect();
+    await setupPrisma.$connect();
     console.log('🎉 Database connected successfully!\n');
     
     // Show available models
@@ -65,7 +67,7 @@ async function quickDatabaseAccess() {
     console.log('3. Ensure database exists');
     console.log('4. Check user permissions');
   } finally {
-    await prisma.$disconnect();
+    await setupPrisma.$disconnect();
   }
 }
 

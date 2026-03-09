@@ -1,1 +1,1 @@
-{"version":3,"file":"setupDatabase.d.ts","sourceRoot":"","sources":["../../src/scripts/setupDatabase.ts"],"names":[],"mappings":""}
+{"version":3,"file":"setupDatabase.d.ts","sourceRoot":"","sources":["../../src/scripts/setupDatabase.ts"],"names":[],"mappings":"AACA,QAAA,MAAsB,iBAAiB,KAA8B,CAAC;AACtE,QAAA,MAAM,WAAW,KAA0B,CAAC;AAG5C,iBAAe,mBAAmB,kBAkEjC"}

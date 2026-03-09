@@ -1,5 +1,7 @@
+// Import PrismaClient dynamically
 const { PrismaClient } = require('@prisma/client');
-import { Prisma, PrismaClient as PrismaClientType } from '@prisma/client';
+type PrismaClientType = any;
+type Prisma = any;
 import { 
   ServiceResponse, 
   WalletData, 

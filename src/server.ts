@@ -131,7 +131,8 @@ app.get('/api/prisma-test', async (req, res) => {
   
   try {
     // Try using Prisma with explicit configuration
-    const { PrismaClient } = await import('@prisma/client');
+    const prismaImport = await import('@prisma/client');
+    const { PrismaClient } = prismaImport;
     
     console.log('🔍 DATABASE_URL:', process.env.DATABASE_URL);
     

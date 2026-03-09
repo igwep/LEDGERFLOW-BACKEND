@@ -1,9 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.transactionService = exports.TransactionService = void 0;
-const { PrismaClient } = require('@prisma/client');
 const types_1 = require("../types");
 const walletService_1 = require("./walletService");
+// Import PrismaClient dynamically
+const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 class TransactionService {
     async initializeTransaction(userId, amount, currency, type, options = {}) {

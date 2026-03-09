@@ -1,23 +1,23 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const client_1 = require("@prisma/client");
-const prisma = new client_1.PrismaClient();
+// Import PrismaClient dynamically
+const { PrismaClient: TestPrismaClient } = require('@prisma/client');
+const testPrisma = new TestPrismaClient();
 async function testDatabaseConnection() {
     try {
         // Test database connection
-        await prisma.$connect();
+        await testPrisma.$connect();
         console.log('✅ Database connected successfully!');
         // Get database info
-        const userCount = await prisma.user.count();
-        const walletCount = await prisma.wallet.count();
-        const transactionCount = await prisma.transaction.count();
+        const userCount = await testPrisma.user.count();
+        const walletCount = await testPrisma.wallet.count();
+        const transactionCount = await testPrisma.transaction.count();
         console.log('\n📊 Database Statistics:');
         console.log(`  Users: ${userCount}`);
         console.log(`  Wallets: ${walletCount}`);
         console.log(`  Transactions: ${transactionCount}`);
         // Show sample data if exists
         if (userCount > 0) {
-            const users = await prisma.user.findMany({
+            const users = await testPrisma.user.findMany({
                 take: 3,
                 select: {
                     id: true,
@@ -28,7 +28,7 @@ async function testDatabaseConnection() {
                 },
             });
             console.log('\n👥 Sample Users:');
-            users.forEach(user => {
+            users.forEach((user) => {
                 console.log(`  ID: ${user.id}`);
                 console.log(`  Email: ${user.email}`);
                 console.log(`  Name: ${user.name || 'N/A'}`);
@@ -38,7 +38,7 @@ async function testDatabaseConnection() {
             });
         }
         if (walletCount > 0) {
-            const wallets = await prisma.wallet.findMany({
+            const wallets = await testPrisma.wallet.findMany({
                 take: 3,
                 include: {
                     user: {
@@ -50,7 +50,7 @@ async function testDatabaseConnection() {
                 },
             });
             console.log('\n💳 Sample Wallets:');
-            wallets.forEach(wallet => {
+            wallets.forEach((wallet) => {
                 console.log(`  ID: ${wallet.id}`);
                 console.log(`  User: ${wallet.user.name || 'N/A'} (${wallet.user.email})`);
                 console.log(`  Balance: ${wallet.balance} ${wallet.currency}`);
@@ -61,7 +61,7 @@ async function testDatabaseConnection() {
             });
         }
         if (transactionCount > 0) {
-            const transactions = await prisma.transaction.findMany({
+            const transactions = await testPrisma.transaction.findMany({
                 take: 3,
                 include: {
                     user: {
@@ -76,7 +76,7 @@ async function testDatabaseConnection() {
                 },
             });
             console.log('\n💸 Recent Transactions:');
-            transactions.forEach(tx => {
+            transactions.forEach((tx) => {
                 console.log(`  ID: ${tx.id}`);
                 console.log(`  Reference: ${tx.reference}`);
                 console.log(`  User: ${tx.user.name || 'N/A'} (${tx.user.email})`);
@@ -93,11 +93,11 @@ async function testDatabaseConnection() {
         console.log('\n🔧 To fix this:');
         console.log('1. Make sure PostgreSQL is running');
         console.log('2. Set DATABASE_URL in your .env file');
-        console.log('3. Run: npx prisma db push');
-        console.log('4. Run: npx prisma studio to view data');
+        console.log('3. Run: npx testPrisma db push');
+        console.log('4. Run: npx testPrisma studio to view data');
     }
     finally {
-        await prisma.$disconnect();
+        await testPrisma.$disconnect();
     }
 }
 // Run the test

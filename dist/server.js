@@ -43,6 +43,7 @@ const morgan_1 = __importDefault(require("morgan"));
 const routes_1 = __importDefault(require("./routes"));
 const common_1 = require("./middleware/common");
 const errorHandler_1 = require("./middleware/errorHandler");
+const swagger_1 = require("./config/swagger");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 // Middleware
@@ -59,6 +60,55 @@ app.use((0, common_1.requestIdMiddleware)());
 console.log('🔗 About to mount routes...');
 console.log('🔗 Routes imported:', typeof routes_1.default);
 app.use('/api', routes_1.default);
+// Swagger Documentation
+app.use('/api-docs', swagger_1.swaggerUi.serve, swagger_1.swaggerUi.setup(swagger_1.specs, {
+    explorer: true,
+    customCss: '.swagger-ui .topbar { display: none }',
+    customSiteTitle: 'LedgerFlow Payment Gateway API Documentation',
+}));
+// Swagger JSON endpoint
+app.get('/api-docs.json', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(swagger_1.specs);
+});
+/**
+ * @swagger
+ * /:
+ *   get:
+ *     summary: API root endpoint
+ *     tags: [Health]
+ *     responses:
+ *       200:
+ *         description: API information
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     name:
+ *                       type: string
+ *                       example: LedgerFlow API
+ *                     version:
+ *                       type: string
+ *                       example: 1.0.0
+ *                     status:
+ *                       type: string
+ *                       example: running
+ *                 meta:
+ *                   type: object
+ *                   properties:
+ *                     timestamp:
+ *                       type: string
+ *                       format: date-time
+ *                     requestId:
+ *                       type: string
+ */
 // Health check
 app.get('/', (req, res) => {
     res.json({
@@ -105,7 +155,8 @@ app.get('/api/prisma-test', async (req, res) => {
     console.log('🧪 Testing Prisma directly...');
     try {
         // Try using Prisma with explicit configuration
-        const { PrismaClient } = await Promise.resolve().then(() => __importStar(require('@prisma/client')));
+        const prismaImport = await Promise.resolve().then(() => __importStar(require('@prisma/client')));
+        const { PrismaClient } = prismaImport;
         console.log('🔍 DATABASE_URL:', process.env.DATABASE_URL);
         // Create PrismaClient instance
         const prisma = new PrismaClient();
@@ -147,5 +198,6 @@ app.listen(PORT, () => {
     console.log(`🚀 LedgerFlow API server running on port ${PORT}`);
     console.log(`📊 Health check: http://localhost:${PORT}/`);
     console.log(`🔗 API docs: http://localhost:${PORT}/api/health`);
+    console.log(`📚 Swagger Documentation: http://localhost:${PORT}/api-docs`);
 });
 //# sourceMappingURL=server.js.map

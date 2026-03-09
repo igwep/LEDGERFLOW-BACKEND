@@ -1,4 +1,3 @@
-const { PrismaClient } = require('@prisma/client');
 import { 
   ServiceResponse, 
   TransactionData, 
@@ -7,8 +6,10 @@ import {
   ConflictError 
 } from '../types';
 import { walletService } from './walletService';
-import { PrismaClient as PrismaClientType } from '@prisma/client';
 
+// Import PrismaClient dynamically
+const { PrismaClient } = require('@prisma/client');
+type PrismaClientType = any;
 const prisma = new PrismaClient();
 
 export class TransactionService {

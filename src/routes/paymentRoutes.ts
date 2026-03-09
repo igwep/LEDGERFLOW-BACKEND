@@ -409,4 +409,277 @@ router.get('/history/:userId', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/payments/{endpoint}/paystack:
+ *   post:
+ *     summary: Process payment via Paystack using unique payment endpoint
+ *     tags: [Payments]
+ *     parameters:
+ *       - in: path
+ *         name: endpoint
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Unique payment endpoint (e.g., pay_john123_abc)
+ *         example: pay_john123_abc
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - amount
+ *               - description
+ *               - customerEmail
+ *             properties:
+ *               amount:
+ *                 type: number
+ *                 minimum: 100
+ *                 description: Payment amount in Naira (minimum ₦1.00)
+ *                 example: 5000
+ *               description:
+ *                 type: string
+ *                 description: Payment description
+ *                 example: Premium subscription
+ *               customerEmail:
+ *                 type: string
+ *                 format: email
+ *                 description: Customer email address for Paystack
+ *                 example: customer@example.com
+ *               redirectUrl:
+ *                 type: string
+ *                 format: uri
+ *                 description: URL to redirect after payment
+ *                 example: https://your-site.com/payment/success
+ *               metadata:
+ *                 type: object
+ *                 description: Additional payment metadata
+ *     responses:
+ *       200:
+ *         description: Paystack payment initialized successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     reference:
+ *                       type: string
+ *                       example: PAY_pay_john123_abc_1234567890
+ *                     status:
+ *                       type: string
+ *                       example: pending
+ *                     amount:
+ *                       type: number
+ *                       example: 5000
+ *                     currency:
+ *                       type: string
+ *                       example: NGN
+ *                     redirectUrl:
+ *                       type: string
+ *                       description: Paystack payment URL
+ *                       example: https://checkout.paystack.com/xxxxx
+ *                     gateway:
+ *                       type: string
+ *                       example: paystack
+ *                     gatewayReference:
+ *                       type: string
+ *                       description: Paystack transaction reference
+ *       400:
+ *         description: Bad request - Invalid payment data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       404:
+ *         description: Payment endpoint not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+// Paystack payment route
+router.post('/:endpoint/paystack', async (req, res) => {
+  console.log(`🏦 POST /api/payments/${req.params.endpoint}/paystack route hit:`, req.body);
+  
+  try {
+    const { endpoint } = req.params;
+    const paymentData: PaymentRequest = req.body;
+
+    // Basic validation
+    if (!paymentData.amount || paymentData.amount < 100) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'INVALID_AMOUNT',
+          message: 'Amount must be at least ₦1.00 (100 kobo)'
+        }
+      });
+    }
+
+    if (!paymentData.customerEmail) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'MISSING_EMAIL',
+          message: 'Customer email is required for Paystack payments'
+        }
+      });
+    }
+
+    // Process payment with Paystack
+    const result = await paymentService.processPaymentWithPaystack(endpoint, paymentData);
+
+    if (result.success) {
+      console.log(`✅ Paystack payment initialized for ${endpoint}:`, result.data?.reference);
+      
+      // If redirect URL is provided, include it in response
+      if (result.data?.redirectUrl) {
+        return res.status(200).json({
+          success: true,
+          data: result.data,
+          redirectUrl: result.data.redirectUrl
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        data: result.data
+      });
+    } else {
+      console.log(`❌ Paystack payment failed:`, result.error);
+      return res.status(400).json(result);
+    }
+
+  } catch (error) {
+    console.error('❌ Paystack payment processing error:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: 'Paystack payment processing failed: ' + (error instanceof Error ? error.message : String(error))
+      }
+    });
+  }
+});
+
+/**
+ * @swagger
+ * /api/payments/verify/{reference}/paystack:
+ *   get:
+ *     summary: Verify Paystack payment status
+ *     tags: [Payments]
+ *     parameters:
+ *       - in: path
+ *         name: reference
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Payment reference number
+ *         example: PAY_pay_john123_abc_1234567890
+ *     responses:
+ *       200:
+ *         description: Payment verification completed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     reference:
+ *                       type: string
+ *                       example: PAY_pay_john123_abc_1234567890
+ *                     status:
+ *                       type: string
+ *                       enum: [success, pending, failed, abandoned]
+ *                       example: success
+ *                     amount:
+ *                       type: number
+ *                       example: 5000
+ *                     currency:
+ *                       type: string
+ *                       example: NGN
+ *                     paidAt:
+ *                       type: string
+ *                       format: date-time
+ *                       example: 2023-12-01T10:30:00Z
+ *                     gatewayResponse:
+ *                       type: string
+ *                       example: Successful
+ *       400:
+ *         description: Bad request - Invalid reference
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       404:
+ *         description: Payment not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+// Paystack verification route
+router.get('/verify/:reference/paystack', async (req, res) => {
+  console.log(`🔍 GET /api/payments/verify/${req.params.reference}/paystack route hit`);
+  
+  try {
+    const { reference } = req.params;
+
+    if (!reference) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'MISSING_REFERENCE',
+          message: 'Transaction reference is required'
+        }
+      });
+    }
+
+    const result = await paymentService.verifyPaystackPayment(reference);
+
+    if (result.success) {
+      console.log(`✅ Paystack payment verified: ${reference}`);
+      return res.status(200).json(result);
+    } else {
+      console.log(`❌ Paystack verification failed: ${reference}`, result.error);
+      return res.status(400).json(result);
+    }
+
+  } catch (error) {
+    console.error('❌ Paystack verification error:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: 'Failed to verify Paystack payment'
+      }
+    });
+  }
+});
+
 export default router;

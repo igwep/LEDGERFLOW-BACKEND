@@ -1,5 +1,7 @@
 import { Router } from 'express';
 // import { webhookController } from '../controllers/webhookController';
+import { PaystackService } from '../services/paystackService';
+import { paymentService } from '../services/paymentService';
 
 const router = Router();
 
@@ -64,7 +66,124 @@ router.post('/:provider', (req, res) => {
   });
 });
 
+/**
+ * @swagger
+ * /api/webhooks/paystack:
+ *   post:
+ *     summary: Paystack webhook endpoint
+ *     tags: [Webhooks]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             description: Paystack webhook event payload
+ *             example:
+ *               event: charge.success
+ *               data:
+ *                 id: 123456
+ *                 reference: PAY_pay_john123_abc_1234567890
+ *                 amount: 500000
+ *                 currency: NGN
+ *                 status: success
+ *                 customer:
+ *                   email: customer@example.com
+ *     responses:
+ *       200:
+ *         description: Paystack webhook processed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Paystack webhook processed successfully
+ *                 event:
+ *                   type: string
+ *                   example: charge.success
+ *                 processed:
+ *                   type: boolean
+ *                   example: true
+ */
+// Paystack webhook route
+router.post('/paystack', async (req, res) => {
+  console.log('🏦 Paystack webhook hit:', req.body);
+  
+  try {
+    const event = req.body.event;
+    const data = req.body.data;
+
+    if (!event || !data) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid Paystack webhook payload'
+      });
+    }
+
+    // Process the webhook
+    const webhookResult = PaystackService.processWebhook(req.body);
+    
+    console.log(`🏦 Processing Paystack event: ${event}`);
+
+    // Handle specific Paystack events
+    switch (event) {
+      case 'charge.success':
+        // Payment was successful - verify and update our records
+        if (data.reference) {
+          try {
+            await paymentService.verifyPaystackPayment(data.reference);
+            console.log(`✅ Paystack payment verified via webhook: ${data.reference}`);
+          } catch (error) {
+            console.error('❌ Failed to verify Paystack payment:', error);
+          }
+        }
+        break;
+
+      case 'charge.failed':
+        // Payment failed - update our records
+        if (data.reference) {
+          console.log(`❌ Paystack payment failed: ${data.reference}`);
+          // Here you could update the transaction status to FAILED
+        }
+        break;
+
+      case 'transfer.success':
+      case 'transfer.failed':
+      case 'transfer.reversed':
+        // Handle transfer events if you implement transfers
+        console.log(`🏦 Transfer event: ${event}`);
+        break;
+
+      default:
+        console.log(`🏦 Unhandled Paystack event: ${event}`);
+    }
+
+    // Always return 200 to Paystack to acknowledge receipt
+    res.status(200).json({
+      success: true,
+      message: 'Paystack webhook processed successfully',
+      event: webhookResult.event,
+      processed: webhookResult.processed
+    });
+
+  } catch (error) {
+    console.error('❌ Paystack webhook error:', error);
+    // Still return 200 to avoid Paystack retrying
+    res.status(200).json({
+      success: false,
+      message: 'Webhook processed with errors',
+      error: error instanceof Error ? error.message : String(error)
+    });
+  }
+});
+
 console.log('📝 Webhook routes registered:');
 console.log('  POST /:provider');
+console.log('  POST /paystack');
 
 export default router;

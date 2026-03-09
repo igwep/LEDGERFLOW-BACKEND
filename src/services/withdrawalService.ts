@@ -1,4 +1,8 @@
-import { Prisma, PrismaClient as PrismaClientType } from '@prisma/client';
+// Import PrismaClient dynamically
+const { PrismaClient } = require('@prisma/client');
+type PrismaClientType = any;
+type Prisma = any;
+const prisma = new PrismaClient();
 import { 
   ServiceResponse, 
   WithdrawalData, 
@@ -8,8 +12,6 @@ import {
 } from '../types';
 import { walletService } from './walletService';
 import { transactionService } from './transactionService';
-
-const prisma = new PrismaClientType();
 
 export class WithdrawalService {
   async createWithdrawal(

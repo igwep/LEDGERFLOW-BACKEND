@@ -5,8 +5,9 @@ exports.validateEndpointFormat = validateEndpointFormat;
 exports.generateEndpointOptions = generateEndpointOptions;
 exports.formatEndpointForDisplay = formatEndpointForDisplay;
 exports.validateEndpointOwnership = validateEndpointOwnership;
-const client_1 = require("@prisma/client");
-const prisma = new client_1.PrismaClient();
+// Import PrismaClient dynamically
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 /**
  * Generate a unique payment endpoint for a user
  * Format: pay_[username]_[random]

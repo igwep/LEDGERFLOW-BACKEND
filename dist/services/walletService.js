@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.walletService = exports.WalletService = void 0;
+// Import PrismaClient dynamically
 const { PrismaClient } = require('@prisma/client');
 const types_1 = require("../types");
 const prisma = new PrismaClient();

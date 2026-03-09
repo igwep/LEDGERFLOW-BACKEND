@@ -105,7 +105,8 @@ router.post('/', async (req, res) => {
     config();
     
     // Import PrismaClient dynamically
-    const { PrismaClient } = await import('@prisma/client');
+    const prismaImport = await import('@prisma/client');
+    const PrismaClient = prismaImport.PrismaClient;
     
     // Create Prisma client - it will use DATABASE_URL from env
     const prisma = new PrismaClient();

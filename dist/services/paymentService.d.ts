@@ -28,6 +28,14 @@ export declare class PaymentService {
      * Validate payment data
      */
     private validatePaymentData;
+    /**
+     * Process payment with Paystack
+     */
+    processPaymentWithPaystack(endpoint: string, paymentData: PaymentRequest): Promise<PaymentResponse>;
+    /**
+     * Verify Paystack payment
+     */
+    verifyPaystackPayment(reference: string): Promise<PaymentResponse>;
 }
 export declare const paymentService: PaymentService;
 //# sourceMappingURL=paymentService.d.ts.map
