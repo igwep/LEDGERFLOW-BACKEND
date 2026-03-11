@@ -72,6 +72,8 @@ class WithdrawalService {
                 console.error('Error creating withdrawal:', error);
                 throw error;
             }
+        }, {
+            timeout: 10000, // 10 seconds timeout
         });
     }
     async processWithdrawal(withdrawalId, status, options = {}) {
@@ -158,6 +160,8 @@ class WithdrawalService {
                 console.error('Error processing withdrawal:', error);
                 throw error;
             }
+        }, {
+            timeout: 10000, // 10 seconds timeout
         });
     }
     async getWithdrawal(withdrawalId) {
@@ -277,6 +281,8 @@ class WithdrawalService {
                 console.error('Error cancelling withdrawal:', error);
                 throw error;
             }
+        }, {
+            timeout: 10000, // 10 seconds timeout
         });
     }
     async getWithdrawalStats(userId, options = {}) {

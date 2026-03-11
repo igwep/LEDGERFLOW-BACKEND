@@ -26,6 +26,9 @@ RUN npm run build
 # Generate Prisma client for production database
 RUN npx prisma generate
 
+# Push database schema to production (only if needed)
+# RUN npx prisma db push
+
 # Install only production dependencies
 RUN npm ci --only=production && npm cache clean --force
 

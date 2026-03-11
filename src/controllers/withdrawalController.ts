@@ -112,7 +112,6 @@ export class WithdrawalController {
     try {
       const { withdrawalId } = req.params;
       const withdrawalIdString = Array.isArray(withdrawalId) ? withdrawalId[0] : withdrawalId;
-      
       const result = await withdrawalService.getWithdrawal(withdrawalIdString);
       
       if (!result.success) {
@@ -134,6 +133,7 @@ export class WithdrawalController {
           requestId: req.requestId,
         },
       });
+
     } catch (error) {
       console.error('Error in getWithdrawal controller:', error);
       res.status(500).json({
@@ -189,6 +189,7 @@ export class WithdrawalController {
           pagination: result.meta?.pagination,
         },
       });
+
     } catch (error) {
       console.error('Error in listWithdrawals controller:', error);
       res.status(500).json({

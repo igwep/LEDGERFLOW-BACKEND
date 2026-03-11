@@ -26,8 +26,9 @@ export class TransactionService {
       expiresAt?: Date;
     } = {}
   ): Promise<ServiceResponse<TransactionData>> {
-    return await prisma.$transaction(async (tx: PrismaClientType) => {
-      try {
+    return await prisma.$transaction(
+      async (tx: PrismaClientType) => {
+        try {
         // Check idempotency
         if (options.idempotencyKey) {
           const existingKey = await tx.idempotencyKey.findUnique({
@@ -104,7 +105,11 @@ export class TransactionService {
         console.error('Error initializing transaction:', error);
         throw error;
       }
-    });
+    },
+    {
+      timeout: 10000, // 10 seconds timeout
+    }
+  );
   }
 
   async processTransaction(
@@ -202,7 +207,11 @@ export class TransactionService {
         
         throw error;
       }
-    });
+    },
+    {
+      timeout: 10000, // 10 seconds timeout
+    }
+  );
   }
 
   async failTransaction(
@@ -432,7 +441,11 @@ export class TransactionService {
         console.error('Error reversing transaction:', error);
         throw error;
       }
-    });
+    },
+    {
+      timeout: 10000, // 10 seconds timeout
+    }
+  );
   }
 
   async cleanupExpiredTransactions(): Promise<ServiceResponse<{ count: number }>> {

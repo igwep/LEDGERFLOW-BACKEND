@@ -178,7 +178,11 @@ export class WalletService {
         console.error('Error processing double-entry transaction:', error);
         throw error;
       }
-    });
+    },
+    {
+      timeout: 10000, // 10 seconds timeout
+    }
+  );
   }
 
   async lockFunds(
@@ -237,7 +241,11 @@ export class WalletService {
         console.error('Error locking funds:', error);
         throw error;
       }
-    });
+    },
+    {
+      timeout: 10000, // 10 seconds timeout
+    }
+  );
   }
 
   async unlockFunds(
@@ -296,7 +304,11 @@ export class WalletService {
         console.error('Error unlocking funds:', error);
         throw error;
       }
-    });
+    },
+    {
+      timeout: 10000, // 10 seconds timeout
+    }
+  );
   }
 
   async getLedgerEntries(

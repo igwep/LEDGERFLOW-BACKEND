@@ -142,6 +142,8 @@ class WalletService {
                 console.error('Error processing double-entry transaction:', error);
                 throw error;
             }
+        }, {
+            timeout: 10000, // 10 seconds timeout
         });
     }
     async lockFunds(walletId, amount, description) {
@@ -191,6 +193,8 @@ class WalletService {
                 console.error('Error locking funds:', error);
                 throw error;
             }
+        }, {
+            timeout: 10000, // 10 seconds timeout
         });
     }
     async unlockFunds(walletId, amount, description) {
@@ -240,6 +244,8 @@ class WalletService {
                 console.error('Error unlocking funds:', error);
                 throw error;
             }
+        }, {
+            timeout: 10000, // 10 seconds timeout
         });
     }
     async getLedgerEntries(walletId, options = {}) {

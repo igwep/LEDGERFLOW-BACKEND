@@ -80,6 +80,8 @@ class TransactionService {
                 console.error('Error initializing transaction:', error);
                 throw error;
             }
+        }, {
+            timeout: 10000, // 10 seconds timeout
         });
     }
     async processTransaction(reference, options = {}) {
@@ -154,6 +156,8 @@ class TransactionService {
                 }
                 throw error;
             }
+        }, {
+            timeout: 10000, // 10 seconds timeout
         });
     }
     async failTransaction(reference, reason) {
@@ -343,6 +347,8 @@ class TransactionService {
                 console.error('Error reversing transaction:', error);
                 throw error;
             }
+        }, {
+            timeout: 10000, // 10 seconds timeout
         });
     }
     async cleanupExpiredTransactions() {

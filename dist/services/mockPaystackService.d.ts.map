@@ -1,0 +1,1 @@
+{"version":3,"file":"mockPaystackService.d.ts","sourceRoot":"","sources":["../../src/services/mockPaystackService.ts"],"names":[],"mappings":"AACA,qBAAa,mBAAmB;WACjB,qBAAqB,CAAC,IAAI,EAAE,GAAG;;;;;;;;;;;;;WAmB/B,iBAAiB,CAAC,SAAS,EAAE,MAAM;;;;;;;;;;;;IAehD,MAAM,CAAC,YAAY,IAAI,OAAO;IAI9B,MAAM,CAAC,kBAAkB;;;;;CAO1B"}

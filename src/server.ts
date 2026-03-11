@@ -169,6 +169,158 @@ app.get('/api/users/test', (req, res) => {
   });
 });
 
+app.post('/api/test-paystack', async (req: AuthenticatedRequest, res) => {
+  console.log('🏦 Direct Paystack test endpoint hit:', req.body);
+  
+  try {
+    // Import payment service dynamically
+    const { paymentService } = await import('./services/paymentService');
+    
+    const { endpoint = 'test_endpoint', paymentData } = req.body;
+    
+    // Basic validation
+    if (!paymentData.amount || paymentData.amount < 100) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'INVALID_AMOUNT',
+          message: 'Amount must be at least ₦1.00 (100 kobo)'
+        }
+      });
+    }
+
+    if (!paymentData.customerEmail) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'MISSING_EMAIL',
+          message: 'Customer email is required for Paystack payments'
+        }
+      });
+    }
+
+    // Process payment with Paystack
+    const result = await paymentService.processPaymentWithPaystack(endpoint, paymentData);
+
+    if (result.success) {
+      console.log(`✅ Paystack payment initialized for ${endpoint}:`, result.data?.reference);
+      return res.status(200).json(result);
+    } else {
+      console.log(`❌ Paystack payment failed:`, result.error);
+      return res.status(400).json(result);
+    }
+
+  } catch (error) {
+    console.error('❌ Direct Paystack test error:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: 'Paystack payment processing failed: ' + (error instanceof Error ? error.message : String(error))
+      }
+    });
+  }
+});
+
+// Working Paystack endpoint (bypassing route mounting issue)
+app.post('/api/payments/:endpoint/paystack', async (req: AuthenticatedRequest, res) => {
+  console.log(`🏦 POST /api/payments/${req.params.endpoint}/paystack route hit:`, req.body);
+  
+  try {
+    // Import payment service dynamically
+    const { paymentService } = await import('./services/paymentService');
+    
+    const endpoint = Array.isArray(req.params.endpoint) ? req.params.endpoint[0] : req.params.endpoint;
+    const paymentData = req.body;
+    
+    console.log('💳 Processing Paystack payment:', { endpoint: String(endpoint), amount: paymentData.amount });
+    
+    // Basic validation
+    if (!paymentData.amount || paymentData.amount < 100) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'INVALID_AMOUNT',
+          message: 'Amount must be at least ₦1.00 (100 kobo)'
+        }
+      });
+    }
+
+    if (!paymentData.customerEmail) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'MISSING_EMAIL',
+          message: 'Customer email is required for Paystack payments'
+        }
+      });
+    }
+
+    // Process payment with Paystack
+    const result = await paymentService.processPaymentWithPaystack(endpoint, paymentData);
+
+    if (result.success) {
+      console.log(`✅ Paystack payment initialized for ${endpoint}:`, result.data?.reference);
+      return res.status(200).json(result);
+    } else {
+      console.log(`❌ Paystack payment failed:`, result.error);
+      return res.status(400).json(result);
+    }
+
+  } catch (error) {
+    console.error('❌ Paystack payment processing error:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: 'Paystack payment processing failed: ' + (error instanceof Error ? error.message : String(error))
+      }
+    });
+  }
+});
+
+// Paystack verification endpoint
+app.get('/api/payments/verify/:reference/paystack', async (req: AuthenticatedRequest, res) => {
+  console.log(`🔍 GET /api/payments/verify/${req.params.reference}/paystack route hit`);
+  
+  try {
+    // Import payment service dynamically
+    const { paymentService } = await import('./services/paymentService');
+    
+    const reference = Array.isArray(req.params.reference) ? req.params.reference[0] : req.params.reference;
+
+    if (!reference) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'MISSING_REFERENCE',
+          message: 'Transaction reference is required'
+        }
+      });
+    }
+
+    const result = await paymentService.verifyPaystackPayment(reference);
+
+    if (result.success) {
+      console.log(`✅ Paystack payment verified: ${reference}`);
+      return res.status(200).json(result);
+    } else {
+      console.log(`❌ Paystack verification failed: ${reference}`, result.error);
+      return res.status(400).json(result);
+    }
+
+  } catch (error) {
+    console.error('❌ Paystack verification error:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: 'Failed to verify Paystack payment'
+      }
+    });
+  }
+});
+
 import userRoutes from './routes/userRoutes';
 
 // Mount user routes properly

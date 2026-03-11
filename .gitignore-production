@@ -1,0 +1,22 @@
+# Production Git Ignore - Exclude development files
+node_modules/
+dist/
+*.log
+.env
+.env.local
+.env.development
+.env.test
+dev.db
+dev.db-journal
+test-*.js
+debug-*.js
+quick-*.js
+mock-*.js
+create-*.js
+check-*.js
+generate-*.js
+postman-*.json
+docker-compose*.yml
+setup-*.md
+*-GUIDE.md
+*.sql

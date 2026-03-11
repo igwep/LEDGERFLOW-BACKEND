@@ -5,6 +5,7 @@ import { Router } from 'express';
 import webhookRoutes from './webhookRoutes';
 import userRoutes from './userRoutes';
 import paymentRoutes from './paymentRoutes';
+import paymentRoutesSimple from './paymentRoutesSimple';
 
 console.log('👤 UserRoutes imported:', userRoutes);
 
@@ -376,6 +377,10 @@ router.use('/users', userRoutes);
 console.log('💳 Mounting payment routes...');
 console.log('💳 Payment routes object:', paymentRoutes);
 router.use('/payments', paymentRoutes);
+
+console.log('💳 Mounting simple payment routes...');
+console.log('💳 Simple payment routes object:', paymentRoutesSimple);
+router.use('/payments', paymentRoutesSimple);
 
 console.log('✅ Routes registered:');
 console.log('  /api/health');

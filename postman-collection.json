@@ -1,0 +1,257 @@
+{
+  "info": {
+    "name": "LedgerFlow Paystack API",
+    "description": "Complete Paystack payment gateway testing collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api",
+      "type": "string"
+    },
+    {
+      "key": "paymentEndpoint",
+      "value": "test_merchant_123",
+      "type": "string"
+    },
+    {
+      "key": "reference",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🏦 Paystack Payment Flow",
+      "item": [
+        {
+          "name": "1️⃣ Initialize Paystack Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-idempotency-key",
+                "value": "{{$randomUUID}}",
+                "description": "Prevents duplicate payments"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 5000,\n  \"description\": \"Premium subscription test\",\n  \"customerEmail\": \"test@example.com\",\n  \"redirectUrl\": \"https://example.com/success\",\n  \"metadata\": {\n    \"plan\": \"premium\",\n    \"userId\": \"test_user_123\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/payments/{{paymentEndpoint}}/paystack",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "payments",
+                "{{paymentEndpoint}}",
+                "paystack"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "2️⃣ Verify Payment Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/payments/verify/{{reference}}/paystack",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "payments",
+                "verify",
+                "{{reference}}",
+                "paystack"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "3️⃣ Test Paystack Webhook",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event\": \"charge.success\",\n  \"data\": {\n    \"id\": 123456789,\n    \"reference\": \"PAY_{{paymentEndpoint}}_{{randomUUID}}\",\n    \"amount\": 500000,\n    \"currency\": \"NGN\",\n    \"status\": \"success\",\n    \"gateway_response\": \"Successful\",\n    \"paid_at\": \"2023-12-01T10:30:00Z\",\n    \"customer\": {\n      \"email\": \"test@example.com\",\n      \"customer_code\": \"CUS_xxxxxx\"\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/webhooks/paystack",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "webhooks",
+                "paystack"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "Complete Paystack payment testing workflow"
+    },
+    {
+      "name": "🔍 Test Scenarios",
+      "item": [
+        {
+          "name": "Success Payment (Card: 4084084084084081)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-idempotency-key",
+                "value": "{{$randomUUID}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 10000,\n  \"description\": \"Test successful payment\",\n  \"customerEmail\": \"success@test.com\",\n  \"redirectUrl\": \"https://example.com/success\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/payments/{{paymentEndpoint}}/paystack",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "payments",
+                "{{paymentEndpoint}}",
+                "paystack"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Failed Payment (Card: 4187447155040432)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-idempotency-key",
+                "value": "{{$randomUUID}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 5000,\n  \"description\": \"Test failed payment\",\n  \"customerEmail\": \"failed@test.com\",\n  \"redirectUrl\": \"https://example.com/failure\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/payments/{{paymentEndpoint}}/paystack",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "payments",
+                "{{paymentEndpoint}}",
+                "paystack"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📊 Health & Status",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Payment History",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/payments/history/test_user_123?limit=10&offset=0",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "payments",
+                "history",
+                "test_user_123"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
