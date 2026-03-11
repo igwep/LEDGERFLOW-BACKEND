@@ -126,11 +126,11 @@ model LedgerEntry {
   transaction    Transaction  @relation(fields: [transactionId], references: [id])
 
   type           String       // 'CREDIT' or 'DEBIT'
-  amount         Float     @default(0)
-  balanceBefore  Float     @default(0)
-  balanceAfter   Float     @default(0)
-  description    String?
-  reference      String?      // External reference
+  amount         Float        @map("amount")
+  balanceBefore  Float        @map("balancebefore")
+  balanceAfter   Float        @map("balanceafter")
+  description    String?       @map("description")
+  reference      String?       @map("reference")
 
   createdAt      DateTime     @map("createdat") @default(now())
 
