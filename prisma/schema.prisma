@@ -119,10 +119,10 @@ model Transaction {
 
 model LedgerEntry {
   id             String       @id @default(uuid())
-  walletId       String
+  walletId       String       @map("walletid")
   wallet         Wallet       @relation(fields: [walletId], references: [id])
 
-  transactionId  String
+  transactionId  String       @map("transactionid")
   transaction    Transaction  @relation(fields: [transactionId], references: [id])
 
   type           String       // 'CREDIT' or 'DEBIT'
@@ -132,7 +132,7 @@ model LedgerEntry {
   description    String?
   reference      String?      // External reference
 
-  createdAt      DateTime     @default(now())
+  createdAt      DateTime     @map("createdat") @default(now())
 
   @@index([walletId])
   @@index([transactionId])
