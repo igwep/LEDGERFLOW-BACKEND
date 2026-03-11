@@ -4,7 +4,7 @@ node_modules
 .env.*
 !.env.production-template
 
-# Development files
+# Development and test files
 dev.db
 dev.db-journal
 test-*.js
@@ -21,11 +21,18 @@ postman-*.json
 # Docker files
 docker-compose*.yml
 
-# Documentation files
+# Documentation files (keep essential ones)
 setup-*.md
 *-GUIDE.md
+!MANUAL-DEPLOYMENT.md
+!DOCKER-DEPLOYMENT.md
+!ENVIRONMENT-CHECKLIST.md
 
 # SQL files
 *.sql
+
+# Simple payment files (development only)
+src/routes/paymentRoutesSimple.ts
+src/services/paymentServiceSimple.ts
 
 /src/generated/prisma
