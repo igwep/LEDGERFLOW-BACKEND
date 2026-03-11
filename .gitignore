@@ -1,5 +1,31 @@
 node_modules
 # Keep environment variables out of version control
 .env
+.env.*
+!.env.production-template
+
+# Development files
+dev.db
+dev.db-journal
+test-*.js
+debug-*.js
+quick-*.js
+mock-*.js
+create-*.js
+check-*.js
+generate-*.js
+
+# Postman collections
+postman-*.json
+
+# Docker files
+docker-compose*.yml
+
+# Documentation files
+setup-*.md
+*-GUIDE.md
+
+# SQL files
+*.sql
 
 /src/generated/prisma
